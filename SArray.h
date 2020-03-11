@@ -22,19 +22,19 @@ protected:
 
   typedef unsigned int uint;
 
-  T mutable data[D0*D1*D2];
+  T mutable myData[D0*D1*D2*D3];
 
 public :
 
   YAKL_INLINE SArray() { }
   YAKL_INLINE SArray(SArray &&in) {
-    for (uint i=0; i < D0*D1*D2*D3; i++) { data[i] = in.data[i]; }
+    for (uint i=0; i < D0*D1*D2*D3; i++) { myData[i] = in.myData[i]; }
   }
   YAKL_INLINE SArray(SArray const &in) {
-    for (uint i=0; i < D0*D1*D2*D3; i++) { data[i] = in.data[i]; }
+    for (uint i=0; i < D0*D1*D2*D3; i++) { myData[i] = in.myData[i]; }
   }
   YAKL_INLINE SArray &operator=(SArray &&in) {
-    for (uint i=0; i < D0*D1*D2*D3; i++) { data[i] = in.data[i]; }
+    for (uint i=0; i < D0*D1*D2*D3; i++) { myData[i] = in.myData[i]; }
     return *this;
   }
   YAKL_INLINE ~SArray() { }
@@ -43,14 +43,14 @@ public :
     #ifdef ARRAY_DEBUG
       if (i0>D0-1) { printf("i0 > D0-1"); exit(-1); }
     #endif
-    return data[i0];
+    return myData[i0];
   }
   YAKL_INLINE T &operator()(uint const i0, uint const i1) const {
     #ifdef ARRAY_DEBUG
       if (i0>D0-1) { printf("i0 > D0-1"); exit(-1); }
       if (i1>D1-1) { printf("i1 > D1-1"); exit(-1); }
     #endif
-    return data[i0*D1 + i1];
+    return myData[i0*D1 + i1];
   }
   YAKL_INLINE T &operator()(uint const i0, uint const i1, uint const i2) const {
     #ifdef ARRAY_DEBUG
@@ -58,7 +58,7 @@ public :
       if (i1>D1-1) { printf("i1 > D1-1"); exit(-1); }
       if (i2>D2-1) { printf("i2 > D2-1"); exit(-1); }
     #endif
-    return data[i0*D1*D2 + i1*D2 + i2];
+    return myData[i0*D1*D2 + i1*D2 + i2];
   }
   YAKL_INLINE T &operator()(uint const i0, uint const i1, uint const i2, uint const i3) const {
     #ifdef ARRAY_DEBUG
@@ -67,8 +67,10 @@ public :
       if (i2>D2-1) { printf("i2 > D2-1"); exit(-1); }
       if (i3>D3-1) { printf("i3 > D3-1"); exit(-1); }
     #endif
-    return data[i0*D1*D2*D3 + i1*D2*D3 + i2*D3 + i3];
+    return myData[i0*D1*D2*D3 + i1*D2*D3 + i2*D3 + i3];
   }
+
+  YAKL_INLINE T *data() { return myData; }
 
   template <class I, uint E0> YAKL_INLINE SArray<T,E0> operator*(SArray<I,D0> const &rhs) {
     //This template could match either vector-vector or matrix-vector multiplication
@@ -76,7 +78,7 @@ public :
       // Both 1-D Arrays --> Element-wise multiplication
       SArray<T,D0> ret;
       for (uint i=0; i<D0; i++) {
-        ret.data[i] = data[i] * rhs.data[i];
+        ret.myData[i] = myData[i] * rhs.myData[i];
       }
       return ret;
     } else {
@@ -111,7 +113,7 @@ public :
   YAKL_INLINE void operator=(T rhs) {
     //Scalar assignment
     for (uint i=0; i<D0*D1*D2*D3; i++) {
-      data[i] = rhs;
+      myData[i] = rhs;
     }
   }
 
@@ -119,7 +121,7 @@ public :
     //Scalar division
     T sum = 0.;
     for (uint i=0; i<D0*D1*D2*D3; i++) {
-      sum += data[i];
+      sum += myData[i];
     }
     return sum;
   }
@@ -127,14 +129,14 @@ public :
   YAKL_INLINE void operator/=(T rhs) {
     //Scalar division
     for (uint i=0; i<D0*D1*D2*D3; i++) {
-      data[i] = data[i] / rhs;
+      myData[i] = myData[i] / rhs;
     }
   }
 
   YAKL_INLINE void operator*=(T rhs) {
     //Scalar multiplication
     for (uint i=0; i<D0*D1*D2*D3; i++) {
-      data[i] = data[i] * rhs;
+      myData[i] = myData[i] * rhs;
     }
   }
 
@@ -142,7 +144,7 @@ public :
     //Scalar multiplication
     SArray<T,D0,D1,D2> ret;
     for (uint i=0; i<D0*D1*D2*D3; i++) {
-      ret.data[i] = data[i] * rhs;
+      ret.myData[i] = myData[i] * rhs;
     }
     return ret;
   }
@@ -151,7 +153,7 @@ public :
     //Scalar division
     SArray<T,D0,D1,D2> ret;
     for (uint i=0; i<D0*D1*D2*D3; i++) {
-      ret.data[i] = data[i] / rhs;
+      ret.myData[i] = myData[i] / rhs;
     }
     return ret;
   }
@@ -170,7 +172,7 @@ public :
       }
     } else {
       for (uint i=0; i<D0*D1*D2*D3; i++) {
-        os << std::setw(12) << v.data[i] << "\n";
+        os << std::setw(12) << v.myData[i] << "\n";
       }
     }
     return os;

@@ -5,6 +5,7 @@
 #include <iostream>
 #include <algorithm>
 #include "BuddyAllocator.h"
+#include <cmath>
 
 #ifdef __USE_CUDA__
   #define YAKL_LAMBDA [=] __device__
@@ -840,9 +841,11 @@ namespace yakl {
       update = update > value ? update : value;
     }
   #endif
+
   
 
 }
+  #include "YAKL_fft.h"
 
 
 #endif
