@@ -70,6 +70,86 @@ public :
     return myData[i0*OFF0 + i1*OFF1 + i2*OFF2 + i3];
   }
 
+  template <class I, uint E0> YAKL_INLINE SArray<T,E0> operator*(SArray<I,D0> const &rhs) {
+    //This template could match either vector-vector or matrix-vector multiplication
+    if ( (D1*D2*D3 == 1) ) {
+      // Both 1-D Arrays --> Element-wise multiplication
+      SArray<T,D0> ret;
+      for (uint i=0; i<D0; i++) {
+        ret(i) = myData(i) * rhs(i);
+      }
+      return ret;
+    } else {
+      // Matrix-Vector multiplication
+      SArray<T,D1> ret;
+      for (uint j=0; j<D1; j++) {
+        T tot = 0;
+        for (uint i=0; i<D0; i++) {
+          tot += (*this)(i,j) * rhs(i);
+        }
+        ret(j) = tot;
+      }
+      return ret;
+    }
+  }
+
+  template <class I, uint E0> YAKL_INLINE SArray<T,E0,D1> operator*(SArray<I,E0,D0> const &rhs) {
+    //This template matches Matrix-Matrix multiplication
+    SArray<T,E0,D1> ret;
+    for (uint j=0; j<E0; j++) {
+      for (uint i=0; i<D1; i++) {
+        T tot = 0;
+        for (uint k=0; k<D0; k++) {
+          tot += (*this)(k,i) * rhs(j,k);
+        }   
+        ret(j,i) = tot;
+      }   
+    }   
+    return ret;
+  }
+
+  YAKL_INLINE T sum() {
+    //Scalar division
+    T sum = 0.;
+    for (uint i=0; i<D0*D1*D2*D3; i++) {
+      sum += myData[i];
+    }
+    return sum;
+  }
+
+  YAKL_INLINE void operator/=(T rhs) {
+    //Scalar division
+    for (uint i=0; i<D0*D1*D2*D3; i++) {
+      myData[i] = myData[i] / rhs;
+    }
+  }
+
+  YAKL_INLINE void operator*=(T rhs) {
+    //Scalar multiplication
+    for (uint i=0; i<D0*D1*D2*D3; i++) {
+      myData[i] = myData[i] * rhs;
+    }
+  }
+
+  YAKL_INLINE SArray<T,D0,D1,D2> operator*(T rhs) {
+    //Scalar multiplication
+    SArray<T,D0,D1,D2> ret;
+    for (uint i=0; i<D0*D1*D2*D3; i++) {
+      ret.myData[i] = myData[i] * rhs;
+    }
+    return ret;
+  }
+
+  YAKL_INLINE SArray<T,D0,D1,D2> operator/(T rhs) {
+    //Scalar division
+    SArray<T,D0,D1,D2> ret;
+    for (uint i=0; i<D0*D1*D2*D3; i++) {
+      ret.myData[i] = myData[i] / rhs;
+    }
+    return ret;
+  }
+
+
   YAKL_INLINE T *data() {
     return myData;
   }

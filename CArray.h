@@ -350,10 +350,54 @@ public:
 
   inline Array<T,rank,memHost,styleC> createHostCopy() {
     Array<T,rank,memHost,styleC> ret;
+
     #ifdef ARRAY_DEBUG
-      ret.setup_arr( myname.c_str() , dimension );
+      if(rank == 1) {
+        ret.setup( myname.c_str() , dimension[0]);
+      }
+      else if(rank == 2) {
+        ret.setup( myname.c_str() , dimension[0], dimension[1]);
+      }
+      else if(rank == 3) {
+        ret.setup( myname.c_str() , dimension[0], dimension[1], dimension[2]);
+      }
+      else if(rank == 4) {
+        ret.setup( myname.c_str() , dimension[0], dimension[1], dimension[2], dimension[3]);
+      }
+      else if(rank == 5) {
+        ret.setup( myname.c_str() , dimension[0], dimension[1], dimension[2], dimension[3], dimension[4]);
+      }
+      else if(rank == 6) {
+        ret.setup( myname.c_str() , dimension[0], dimension[1], dimension[2], dimension[3], dimension[4], dimension[5]);
+      }
+      else if(rank == 7) {
+        ret.setup( myname.c_str() , dimension[0], dimension[1], dimension[2], dimension[3], dimension[4], dimension[5], dimension[6]);
+      }
+      //ret.setup_arr( myname.c_str() , dimension );
+      //ret.setup_arr( myname.c_str() , dimension );
     #else
-      ret.setup_arr( ""             , dimension );
+      if(rank == 1) {
+        ret.setup( "" , dimension[0]);
+      }
+      else if(rank == 2) {
+        ret.setup( "" , dimension[0], dimension[1]);
+      }
+      else if(rank == 3) {
+        ret.setup( "" , dimension[0], dimension[1], dimension[2]);
+      }
+      else if(rank == 4) {
+        ret.setup( "" , dimension[0], dimension[1], dimension[2], dimension[3]);
+      }
+      else if(rank == 5) {
+        ret.setup( "" , dimension[0], dimension[1], dimension[2], dimension[3], dimension[4]);
+      }
+      else if(rank == 6) {
+        ret.setup( "" , dimension[0], dimension[1], dimension[2], dimension[3], dimension[4], dimension[5]);
+      }
+      else if(rank == 7) {
+        ret.setup( "" , dimension[0], dimension[1], dimension[2], dimension[3], dimension[4], dimension[5], dimension[6]);
+      }
+      //ret.setup_arr( ""             , dimension );
     #endif
     if (myMem == memHost) {
       for (size_t i=0; i<totElems(); i++) {
@@ -375,9 +419,51 @@ public:
   inline Array<T,rank,memDevice,styleC> createDeviceCopy() {
     Array<T,rank,memDevice,styleC> ret;
     #ifdef ARRAY_DEBUG
-      ret.setup_arr( myname.c_str() , dimension );
+      if(rank == 1) {
+        ret.setup( myname.c_str() , dimension[0]);
+      }
+      else if(rank == 2) {
+        ret.setup( myname.c_str() , dimension[0], dimension[1]);
+      }
+      else if(rank == 3) {
+        ret.setup( myname.c_str() , dimension[0], dimension[1], dimension[2]);
+      }
+      else if(rank == 4) {
+        ret.setup( myname.c_str() , dimension[0], dimension[1], dimension[2], dimension[3]);
+      }
+      else if(rank == 5) {
+        ret.setup( myname.c_str() , dimension[0], dimension[1], dimension[2], dimension[3], dimension[4]);
+      }
+      else if(rank == 6) {
+        ret.setup( myname.c_str() , dimension[0], dimension[1], dimension[2], dimension[3], dimension[4], dimension[5]);
+      }
+      else if(rank == 7) {
+        ret.setup( myname.c_str() , dimension[0], dimension[1], dimension[2], dimension[3], dimension[4], dimension[5], dimension[6]);
+      }
+      //ret.setup_arr( myname.c_str() , dimension );
     #else
-      ret.setup_arr( ""             , dimension );
+      if(rank == 1) {
+        ret.setup( "" , dimension[0]);
+      }
+      else if(rank == 2) {
+        ret.setup( "" , dimension[0], dimension[1]);
+      }
+      else if(rank == 3) {
+        ret.setup( "" , dimension[0], dimension[1], dimension[2]);
+      }
+      else if(rank == 4) {
+        ret.setup( "" , dimension[0], dimension[1], dimension[2], dimension[3]);
+      }
+      else if(rank == 5) {
+        ret.setup( "" , dimension[0], dimension[1], dimension[2], dimension[3], dimension[4]);
+      }
+      else if(rank == 6) {
+        ret.setup( "" , dimension[0], dimension[1], dimension[2], dimension[3], dimension[4], dimension[5]);
+      }
+      else if(rank == 7) {
+        ret.setup( "" , dimension[0], dimension[1], dimension[2], dimension[3], dimension[4], dimension[5], dimension[6]);
+      }
+      //ret.setup_arr( ""             , dimension );
     #endif
     if (myMem == memHost) {
       #ifdef __USE_CUDA__
@@ -557,13 +643,24 @@ public:
     return os;
   }
 
+  //inline void setup_arr(char const * label, size_t const dimension[]) {
+  //  #ifdef ARRAY_DEBUG
+  //    myname = std::string(label);
+  //  #endif
 
-protected:
-  // This is stuff the user has no business messing with
+  //  deallocate();
 
-  int *refCount; // Pointer shared by multiple copies of this Array to keep track of allcation / free
+  //  // Setup this Array with the given number of dimensions and dimension sizes
+  //  for (int i=0; i<rank; i++) {
+  //    this->dimension[i] = dimension[i];
+  //  }
+  //  offsets[0] = 1;
+  //  for (int i=1; i<rank; i++) {
+  //    offsets[i] = offsets[i-1] * dimension[i-1];
+  //  }
+  //  allocate();
+  //}
 
-  // It would be dangerous for the user to call this directly rather than through the constructors, so we're "hiding" it :)
   inline void setup(char const * label, size_t d0, size_t d1=1, size_t d2=1, size_t d3=1, size_t d4=1, size_t d5=1, size_t d6=1, size_t d7=1) {
     #ifdef ARRAY_DEBUG
       myname = std::string(label);
@@ -586,6 +683,14 @@ protected:
     }
     allocate();
   }
+
+
+protected:
+  // This is stuff the user has no business messing with
+
+  int *refCount; // Pointer shared by multiple copies of this Array to keep track of allcation / free
+
+  // It would be dangerous for the user to call this directly rather than through the constructors, so we're "hiding" it :)
 
 
   inline void allocate() {
