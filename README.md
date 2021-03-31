@@ -820,17 +820,17 @@ include_directories(/path/to/yakl)
 include_directories(/path/to/build/directory)
 ```
 
-The following variables can be defined before the `add_subdirectory()` command: `${ARCH}`, `${CUDA_FLAGS}`, `${HIP_FLAGS}`, and `${YAKL_CXX_FLAGS}`. 
+The following variables can be defined before the `add_subdirectory()` command: `${YAKL_ARCH}`, `${CUDA_FLAGS}`, `${HIP_FLAGS}`, and `${YAKL_CXX_FLAGS}`. 
 
-To compile YAKL for a device target, you'll need to specify `-DARCH="CUDA"` or `-DARCH="HIP"` for Nvidia and AMD GPUs, respectively. If you don't specify either of these, then YAKL will compile for the CPU in serial.
+To compile YAKL for a device target, you'll need to specify `-DYAKL_ARCH="CUDA"` or `-DYAKL_ARCH="HIP"` for Nvidia and AMD GPUs, respectively. If you don't specify either of these, then YAKL will compile for the CPU in serial.
 
 You can further specify `-DCUDA_FLAGS="-D__MANAGED__ -arch sm_70"` or other flags if you wish. if you omit these flags, YAKL will compile without Managed Memory and without a specific GPU target. If you use double precision `atomicAdd`, and you're using a modern Nvidia GPU (`sm_60` or greater), you will want to specify `-arch` to ensure good performance. Again, specify these before running the CMake `add_subdirectory` command.
 
 You can specify `-DHIP_FLAGS="..."` to pass in more options to AMD's `hipcc` compiler.
 
-If you specify `-DARCH="CUDA"`, then you **must** specify `-DYAKL_CUB_HOME=/path/to/cub`.
+If you specify `-DYAKL_ARCH="CUDA"`, then you **must** specify `-DYAKL_CUB_HOME=/path/to/cub`.
 
-If you specify `-DARCH="HIP"`, then you **must** specify `-DYAKL_HIPCUB_HOME=/path/to/hipCUB -DYAKL_ROCPRIM_HOME=/path/to/rocPRIM`
+If you specify `-DYAKL_ARCH="HIP"`, then you **must** specify `-DYAKL_HIPCUB_HOME=/path/to/hipCUB -DYAKL_ROCPRIM_HOME=/path/to/rocPRIM`
 
 After running the `add_subdirectory()` command, YAKL will export four variables into parent scope for you to use: `${YAKL_CXX_SOURCE}`, `${YAKL_F90_SOURCE}`, `${YAKL_SOURCE}`, and `${YAKL_CXX_FLAGS}`. The C++ flags are given to you since it's almost certain you'll need to compile C++ source files that link in YAKL headers, and these will needs those flags.
 
@@ -838,7 +838,7 @@ You can compile C++ files that use YAKL header files with the following:
 
 ```cmake
 set_source_files_properties(whatever.cpp PROPERTIES COMPILE_FLAGS "${YAKL_CXX_FLAGS}")
-if ("${ARCH}" STREQUALS "CUDA")
+if ("${YAKL_ARCH}" STREQUALS "CUDA")
   set_source_files_properties(whatever.cpp PROPERTIES LANGUAGE CUDA)
 endif()
 ```
